@@ -24,4 +24,7 @@ python manage.py collectstatic --noinput
 echo "==> Applying database migrations..."
 python manage.py migrate --noinput
 
+echo "==> Ensuring default admin user exists..."
+python manage.py ensure_admin
+
 echo "==> Build complete!"
