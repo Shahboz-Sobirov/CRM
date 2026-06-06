@@ -42,12 +42,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-6%=416x8prkh%$0+o@hcu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.replit.dev,.repl.co,.replit.app').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.replit.dev,.repl.co,.replit.app,.onrender.com').split(',')
 
 # Trust Replit (and configurable) origins for CSRF
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
-    default='https://*.replit.dev,https://*.repl.co,https://*.replit.app'
+    default='https://*.replit.dev,https://*.repl.co,https://*.replit.app,https://*.onrender.com'
 ).split(',')
 
 
@@ -222,11 +222,12 @@ CORS_ALLOWED_ORIGINS = config(
     default='http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:8000'
 ).split(',')
 
-# Allow Replit preview domains via regex
+# Allow Replit / Render preview domains via regex
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r'^https://.*\.replit\.dev$',
     r'^https://.*\.repl\.co$',
     r'^https://.*\.replit\.app$',
+    r'^https://.*\.onrender\.com$',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
