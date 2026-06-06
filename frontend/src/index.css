@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: #0a0a14;
+  color: #e2e8f0;
+  overflow-x: hidden;
+}
+
+/* Native dropdown option readability (Windows/Chrome dark theme fix) */
+option {
+  background-color: #161730 !important;
+  color: #e2e8f0 !important;
+}
+option:checked,
+option:hover {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4f46e5, #7c3aed);
+  border-radius: 10px;
+  border: 2px solid #0a0a14;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6366f1, #a855f7);
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08];
+  }
+  .glass-strong {
+    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12];
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-300 via-purple-400 to-pink-400 bg-clip-text text-transparent;
+  }
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 px-5 py-2.5 font-semibold text-white shadow-glow transition-all duration-300 hover:shadow-glow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-medium text-slate-200 transition-all duration-300 hover:bg-white/10 hover:border-white/20;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-slate-100 placeholder-slate-500 outline-none transition-all duration-300 focus:border-brand-400/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-500/20;
+  }
+  /* Native select dropdown readability */
+  select.input-field option,
+  select option {
+    background-color: #161730;
+    color: #e2e8f0;
+  }
+  select.input-field option:checked,
+  select option:checked {
+    background-color: #4f46e5;
+    color: #ffffff;
+  }
+  .card {
+    @apply glass rounded-2xl p-6 shadow-soft;
+  }
+}
+
+/* Aurora background blobs */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: auroraMove 18s ease-in-out infinite;
+}
+.aurora::before {
+  background: radial-gradient(circle, #6366f1, transparent 70%);
+  top: -10%;
+  left: -10%;
+}
+.aurora::after {
+  background: radial-gradient(circle, #a855f7, transparent 70%);
+  bottom: -10%;
+  right: -10%;
+  animation-delay: -9s;
+}
+
+@keyframes auroraMove {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(10vw, 5vh) scale(1.1);
+  }
+  66% {
+    transform: translate(-5vw, 10vh) scale(0.95);
+  }
+}

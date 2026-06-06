@@ -1,0 +1,2687 @@
+openapi: 3.0.3
+info:
+  title: Oxford CRM API
+  version: 1.0.0
+  description: School Management System API for managing students, teachers, classes,
+    attendance, and payments
+paths:
+  /api/attendance/:
+    get:
+      operationId: attendance_list
+      description: Get a list of all attendance records. Parents see only their children's
+        attendance, teachers see attendance for their groups.
+      summary: List all attendance records
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+        description: Filter by date (YYYY-MM-DD)
+      - in: query
+        name: group
+        schema:
+          type: integer
+        description: Filter by group ID
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: student
+        schema:
+          type: integer
+        description: Filter by student ID
+      tags:
+      - Attendance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttendanceListList'
+          description: ''
+    post:
+      operationId: attendance_create
+      description: Create a new attendance record (Manager/Admin/Teacher for owned
+        groups)
+      summary: Create attendance record
+      tags:
+      - Attendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCreate'
+          description: ''
+  /api/attendance/{id}/:
+    get:
+      operationId: attendance_retrieve
+      description: Retrieve details of a specific attendance record
+      summary: Get attendance details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Attendance
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+          description: ''
+    put:
+      operationId: attendance_update
+      description: Update attendance record (Manager/Admin/Teacher for owned groups)
+      summary: Update attendance
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Attendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendanceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+          description: ''
+    patch:
+      operationId: attendance_partial_update
+      description: Partially update attendance record (Manager/Admin/Teacher for owned
+        groups)
+      summary: Partially update attendance
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Attendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+          description: ''
+    delete:
+      operationId: attendance_destroy
+      description: Delete an attendance record (Manager/Admin/Teacher for owned groups)
+      summary: Delete attendance
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Attendance
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/attendance/mark/:
+    post:
+      operationId: attendance_mark_create
+      description: Mark attendance for multiple students in a group on a specific
+        date (Manager/Admin/Teacher for owned groups)
+      summary: Bulk mark attendance
+      tags:
+      - Attendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkAttendanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BulkAttendanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BulkAttendanceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Invalid data
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Group not found
+          description: ''
+  /api/auth/change-password/:
+    post:
+      operationId: auth_change_password_create
+      description: Change the password for the currently authenticated user
+      summary: Change password
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Password changed successfully
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Invalid password
+          description: ''
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: Obtain JWT access and refresh tokens
+      summary: Login
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Get the currently authenticated user information
+      summary: Get current user
+      tags:
+      - Authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: Create a new user account with email and password
+      summary: Register a new user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/:
+    get:
+      operationId: auth_users_list
+      description: Get a list of all users (Admin only)
+      summary: List all users
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: auth_users_create
+      description: Create a new user account (Admin only)
+      summary: Create a new user
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+          description: ''
+  /api/auth/users/{id}/:
+    get:
+      operationId: auth_users_retrieve
+      description: Retrieve details of a specific user (Admin only)
+      summary: Get user details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_users_update
+      description: Update user information (Admin only)
+      summary: Update user
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_users_partial_update
+      description: Partially update user information (Admin only)
+      summary: Partially update user
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: auth_users_destroy
+      description: Delete a user account (Admin only)
+      summary: Delete user
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/classes/:
+    get:
+      operationId: classes_list
+      description: Get a list of all groups/classes. Teachers see only their groups,
+        parents see groups their children are in.
+      summary: List all groups
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Filter by active status
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGroupListList'
+          description: ''
+    post:
+      operationId: classes_create
+      description: Create a new group/class (Manager/Admin only)
+      summary: Create a new group
+      tags:
+      - Groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GroupCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GroupCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupCreate'
+          description: ''
+  /api/classes/{id}/:
+    get:
+      operationId: classes_retrieve
+      description: Retrieve details of a specific group/class
+      summary: Get group details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+    put:
+      operationId: classes_update
+      description: Update group information (Manager/Admin only)
+      summary: Update group
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+    patch:
+      operationId: classes_partial_update
+      description: Partially update group information (Manager/Admin only)
+      summary: Partially update group
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGroupRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+    delete:
+      operationId: classes_destroy
+      description: Delete a group/class (Manager/Admin only)
+      summary: Delete group
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Groups
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/classes/{id}/students/:
+    get:
+      operationId: classes_students_list
+      description: 'GET: List all students in a group. POST: Add a student to a group
+        (Manager/Admin only)'
+      summary: Manage group students
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Group ID
+        required: true
+      tags:
+      - Groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                description: Permission denied
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Group not found
+          description: ''
+    post:
+      operationId: classes_students_create
+      description: 'GET: List all students in a group. POST: Add a student to a group
+        (Manager/Admin only)'
+      summary: Manage group students
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Group ID
+        required: true
+      tags:
+      - Groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddStudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddStudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                description: Permission denied
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Group not found
+          description: ''
+  /api/payments/:
+    get:
+      operationId: payments_list
+      description: Get a list of all payments. Parents see only their children's payments,
+        teachers see payments for students in their groups.
+      summary: List all payments
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentListList'
+          description: ''
+    post:
+      operationId: payments_create
+      description: Create a new payment record (Manager/Admin only)
+      summary: Create a new payment
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCreate'
+          description: ''
+  /api/payments/{id}/:
+    get:
+      operationId: payments_retrieve
+      description: Retrieve details of a specific payment
+      summary: Get payment details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    put:
+      operationId: payments_update
+      description: Update payment information (Manager/Admin only)
+      summary: Update payment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    patch:
+      operationId: payments_partial_update
+      description: Partially update payment information (Manager/Admin only)
+      summary: Partially update payment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    delete:
+      operationId: payments_destroy
+      description: Delete a payment record (Manager/Admin only)
+      summary: Delete payment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/payments/{id}/approve/:
+    post:
+      operationId: payments_approve_create
+      description: Mark a payment as completed (Admin only)
+      summary: Approve payment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Payment ID
+        required: true
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/payments/{id}/reject/:
+    post:
+      operationId: payments_reject_create
+      description: Mark a payment as cancelled (Admin only)
+      summary: Reject payment
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Payment ID
+        required: true
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /api/payments/statistics/:
+    get:
+      operationId: payments_statistics_retrieve
+      description: Get aggregated payment statistics including total amount, total
+        payments, completed and pending payments (Manager/Admin only)
+      summary: Get payment statistics
+      tags:
+      - Payments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                PaymentStatistics:
+                  value:
+                    total_amount: 150000.0
+                    total_payments: 45
+                    completed_payments: 40
+                    pending_payments: 5
+                    cancelled_payments: 0
+                  summary: Payment statistics
+          description: ''
+  /api/students/:
+    get:
+      operationId: students_list
+      description: Get a list of all students. Parents see only their children, teachers
+        see students in their groups.
+      summary: List all students
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Students
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentListList'
+          description: ''
+    post:
+      operationId: students_create
+      description: Create a new student record (Manager/Admin only)
+      summary: Create a new student
+      tags:
+      - Students
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentCreate'
+          description: ''
+  /api/students/{id}/:
+    get:
+      operationId: students_retrieve
+      description: Retrieve details of a specific student
+      summary: Get student details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Students
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    put:
+      operationId: students_update
+      description: Update student information (Manager/Admin only)
+      summary: Update student
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Students
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    patch:
+      operationId: students_partial_update
+      description: Partially update student information (Manager/Admin only)
+      summary: Partially update student
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Students
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    delete:
+      operationId: students_destroy
+      description: Delete a student record (Manager/Admin only)
+      summary: Delete student
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Students
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/students/{id}/attendance/:
+    get:
+      operationId: students_attendance_list
+      description: Retrieve all attendance records for a specific student
+      summary: Get student attendance
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Student ID
+        required: true
+      tags:
+      - Students
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                description: Permission denied
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Student not found
+          description: ''
+  /api/students/{id}/payments/:
+    get:
+      operationId: students_payments_list
+      description: Retrieve all payment records for a specific student
+      summary: Get student payments
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Student ID
+        required: true
+      tags:
+      - Students
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                description: Permission denied
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Student not found
+          description: ''
+  /api/teachers/:
+    get:
+      operationId: teachers_list
+      description: Get a list of all teachers
+      summary: List all teachers
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Teachers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeacherListList'
+          description: ''
+    post:
+      operationId: teachers_create
+      description: Create a new teacher profile (Admin only)
+      summary: Create a new teacher
+      tags:
+      - Teachers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeacherCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeacherCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherCreate'
+          description: ''
+  /api/teachers/{id}/:
+    get:
+      operationId: teachers_retrieve
+      description: Retrieve details of a specific teacher
+      summary: Get teacher details
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Teachers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+          description: ''
+    put:
+      operationId: teachers_update
+      description: Update teacher information (Admin only)
+      summary: Update teacher
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Teachers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeacherRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeacherRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+          description: ''
+    patch:
+      operationId: teachers_partial_update
+      description: Partially update teacher information (Admin only)
+      summary: Partially update teacher
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Teachers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+          description: ''
+    delete:
+      operationId: teachers_destroy
+      description: Delete a teacher profile (Admin only)
+      summary: Delete teacher
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Teachers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/teachers/{id}/groups/:
+    get:
+      operationId: teachers_groups_list
+      description: Retrieve all groups/classes assigned to a specific teacher
+      summary: Get teacher groups
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: pk
+        schema:
+          type: integer
+        description: Teacher ID
+        required: true
+      tags:
+      - Teachers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                description: Permission denied
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                description: Teacher not found
+          description: ''
+components:
+  schemas:
+    AddStudentRequest:
+      type: object
+      properties:
+        student_id:
+          type: integer
+      required:
+      - student_id
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        group:
+          type: integer
+        group_name:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - date
+      - group
+      - group_name
+      - id
+      - student
+      - student_name
+      - updated_at
+    AttendanceCreate:
+      type: object
+      properties:
+        student:
+          type: integer
+        group:
+          type: integer
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        notes:
+          type: string
+      required:
+      - date
+      - group
+      - student
+    AttendanceCreateRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        group:
+          type: integer
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        notes:
+          type: string
+      required:
+      - date
+      - group
+      - student
+    AttendanceList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        group:
+          type: integer
+        group_name:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - date
+      - group
+      - group_name
+      - id
+      - student
+      - student_name
+    AttendanceRecordRequest:
+      type: object
+      properties:
+        student_id:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status148Enum'
+          default: present
+        notes:
+          type: string
+      required:
+      - student_id
+    AttendanceRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        group:
+          type: integer
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        notes:
+          type: string
+      required:
+      - date
+      - group
+      - student
+    BulkAttendanceRequest:
+      type: object
+      properties:
+        group:
+          type: integer
+        date:
+          type: string
+          format: date
+        attendance_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendanceRecordRequest'
+      required:
+      - attendance_records
+      - date
+      - group
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          minLength: 8
+        new_password_confirm:
+          type: string
+          minLength: 8
+      required:
+      - new_password
+      - new_password_confirm
+      - old_password
+    CustomTokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        teacher:
+          type: integer
+          nullable: true
+        teacher_name:
+          type: string
+          readOnly: true
+        teacher_details:
+          allOf:
+          - $ref: '#/components/schemas/TeacherList'
+          readOnly: true
+        students:
+          type: array
+          items:
+            type: integer
+        students_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentList'
+          readOnly: true
+        student_count:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - start_date
+      - student_count
+      - students_list
+      - teacher_details
+      - teacher_name
+      - updated_at
+    GroupCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        teacher:
+          type: integer
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - name
+      - start_date
+    GroupCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        teacher:
+          type: integer
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - name
+      - start_date
+    GroupList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        teacher_name:
+          type: string
+          readOnly: true
+        student_count:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+      - start_date
+      - student_count
+      - teacher_name
+    GroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        teacher:
+          type: integer
+          nullable: true
+        students:
+          type: array
+          items:
+            type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - name
+      - start_date
+    PaginatedAttendanceListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendanceList'
+    PaginatedGroupListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupList'
+    PaginatedPaymentListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentList'
+    PaginatedStudentListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentList'
+    PaginatedTeacherListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeacherList'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PatchedAttendanceRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        group:
+          type: integer
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/Status148Enum'
+        notes:
+          type: string
+    PatchedGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        teacher:
+          type: integer
+          nullable: true
+        students:
+          type: array
+          items:
+            type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedPaymentRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        description:
+          type: string
+        receipt_number:
+          type: string
+          maxLength: 100
+    PatchedStudentRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+        parent:
+          type: integer
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+    PatchedTeacherRequest:
+      type: object
+      properties:
+        user:
+          type: integer
+        specialty:
+          type: string
+          minLength: 1
+          maxLength: 200
+        bio:
+          type: string
+        hire_date:
+          type: string
+          format: date
+    PatchedUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        description:
+          type: string
+        receipt_number:
+          type: string
+          maxLength: 100
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - payment_date
+      - student
+      - student_name
+      - updated_at
+    PaymentCreate:
+      type: object
+      properties:
+        student:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        description:
+          type: string
+        receipt_number:
+          type: string
+          maxLength: 100
+      required:
+      - amount
+      - payment_date
+      - student
+    PaymentCreateRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        description:
+          type: string
+        receipt_number:
+          type: string
+          maxLength: 100
+      required:
+      - amount
+      - payment_date
+      - student
+    PaymentList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - payment_date
+      - student
+      - student_name
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - card
+      - bank_transfer
+      - online
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `card` - Card
+        * `bank_transfer` - Bank Transfer
+        * `online` - Online
+    PaymentRequest:
+      type: object
+      properties:
+        student:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_date:
+          type: string
+          format: date
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status447Enum'
+        description:
+          type: string
+        receipt_number:
+          type: string
+          maxLength: 100
+      required:
+      - amount
+      - payment_date
+      - student
+    RoleEnum:
+      enum:
+      - admin
+      - manager
+      - teacher
+      - parent
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `manager` - Manager
+        * `teacher` - Teacher
+        * `parent` - Parent
+    Status148Enum:
+      enum:
+      - present
+      - absent
+      - late
+      - excused
+      type: string
+      description: |-
+        * `present` - Present
+        * `absent` - Absent
+        * `late` - Late
+        * `excused` - Excused
+    Status447Enum:
+      enum:
+      - pending
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        birth_date:
+          type: string
+          format: date
+        age:
+          type: integer
+          readOnly: true
+        parent:
+          type: integer
+          nullable: true
+        parent_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - age
+      - birth_date
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_name
+      - parent_name
+      - updated_at
+    StudentCreate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+        parent:
+          type: integer
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+      required:
+      - birth_date
+      - first_name
+      - last_name
+    StudentCreateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+        parent:
+          type: integer
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+      required:
+      - birth_date
+      - first_name
+      - last_name
+    StudentList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        birth_date:
+          type: string
+          format: date
+        parent_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 20
+      required:
+      - birth_date
+      - full_name
+      - id
+      - parent_name
+    StudentListRequest:
+      type: object
+      properties:
+        birth_date:
+          type: string
+          format: date
+        phone:
+          type: string
+          maxLength: 20
+      required:
+      - birth_date
+    StudentRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+        parent:
+          type: integer
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+      required:
+      - birth_date
+      - first_name
+      - last_name
+    Teacher:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+        user_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        specialty:
+          type: string
+          maxLength: 200
+        bio:
+          type: string
+        hire_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - full_name
+      - hire_date
+      - id
+      - specialty
+      - updated_at
+      - user
+      - user_details
+    TeacherCreate:
+      type: object
+      properties:
+        user:
+          type: integer
+        specialty:
+          type: string
+          maxLength: 200
+        bio:
+          type: string
+        hire_date:
+          type: string
+          format: date
+      required:
+      - hire_date
+      - specialty
+      - user
+    TeacherCreateRequest:
+      type: object
+      properties:
+        user:
+          type: integer
+        specialty:
+          type: string
+          minLength: 1
+          maxLength: 200
+        bio:
+          type: string
+        hire_date:
+          type: string
+          format: date
+      required:
+      - hire_date
+      - specialty
+      - user
+    TeacherList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        specialty:
+          type: string
+          maxLength: 200
+        hire_date:
+          type: string
+          format: date
+      required:
+      - email
+      - full_name
+      - hire_date
+      - id
+      - specialty
+    TeacherListRequest:
+      type: object
+      properties:
+        specialty:
+          type: string
+          minLength: 1
+          maxLength: 200
+        hire_date:
+          type: string
+          format: date
+      required:
+      - hire_date
+      - specialty
+    TeacherRequest:
+      type: object
+      properties:
+        user:
+          type: integer
+        specialty:
+          type: string
+          minLength: 1
+          maxLength: 200
+        bio:
+          type: string
+        hire_date:
+          type: string
+          format: date
+      required:
+      - hire_date
+      - specialty
+      - user
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - date_joined
+      - email
+      - first_name
+      - full_name
+      - id
+      - last_name
+    UserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - email
+      - first_name
+      - last_name
+    UserCreateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - password_confirm
+    UserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+      required:
+      - email
+      - first_name
+      - last_name
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Authentication
+  description: User authentication and authorization endpoints
+- name: Users
+  description: User management operations
+- name: Students
+  description: Student management operations
+- name: Teachers
+  description: Teacher management operations
+- name: Groups
+  description: Class/Group management operations
+- name: Attendance
+  description: Attendance tracking operations
+- name: Payments
+  description: Payment management operations
